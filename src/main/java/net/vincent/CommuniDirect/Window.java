@@ -1,0 +1,123 @@
+package net.vincent.CommuniDirect;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.function.Consumer;
+
+public class Window extends JFrame {
+
+    CommuniDirect communiDirect;
+
+    JTextArea serverArea;
+    JScrollPane serverScrollPane;
+
+    public Window(CommuniDirect communiDirect) {
+
+        this.communiDirect = communiDirect;
+
+        // === SERVER AREA ===
+        serverArea = new JTextArea();
+        serverArea.setEditable(false);
+
+        serverScrollPane = new JScrollPane(serverArea);
+        serverScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        serverScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        JPanel server = new JPanel(new BorderLayout());
+        server.add(serverScrollPane, BorderLayout.CENTER);
+
+        // === CLIENT FORM ===
+        JLabel msgLabel = new JLabel("Message");
+        JLabel ipLabel = new JLabel("IP");
+        JLabel portLabel = new JLabel("Port");
+
+        JTextField msgF = new JTextField();
+        JTextField ipF = new JTextField();
+        JTextField portF = new JTextField();
+
+        JButton sendButton = new JButton("Send");
+
+        // Send button action
+        sendButton.addActionListener(e -> {
+            String message = msgF.getText().trim();
+            String ip = ipF.getText().trim();
+            int port = communiDirect.parsePort(portF.getText().trim(), CommuniDirect.defaultPort);
+
+            if (!message.isEmpty() && !ip.isEmpty() ) {
+                sendButton.setEnabled(false); // Disable button
+                new Thread(() -> {
+                    communiDirect.sendMessage(ip, port, message);
+                    SwingUtilities.invokeLater(() -> sendButton.setEnabled(true)); // Re-enable button
+                }).start();
+            } else {
+                communiDirect.logClient("⚠ Please enter IP and message before sending.");
+            }
+            msgF.setText("");
+            ipF.setText("");
+            portF.setText("");// Only clear the message field
+        });
+
+        JPanel client = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Row 0 - Message
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0; gbc.anchor = GridBagConstraints.EAST;
+        client.add(msgLabel, gbc);
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        client.add(msgF, gbc);
+
+        // Row 1 - IP
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0;
+        client.add(ipLabel, gbc);
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        client.add(ipF, gbc);
+
+        // Row 2 - Port
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0;
+        client.add(portLabel, gbc);
+        gbc.gridx = 1; gbc.weightx = 1.0;
+        client.add(portF, gbc);
+
+        // Row 3 - Button
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2; gbc.weightx = 0; gbc.anchor = GridBagConstraints.CENTER;
+        client.add(sendButton, gbc);
+
+        // === MAIN FRAME ===
+        this.setSize(500, 400);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLayout(new GridLayout(1, 2));
+        this.setTitle("CommuniDirect");
+
+        this.add(server);
+        this.add(client);
+
+        this.setVisible(true);
+    }
+
+    public void setPort(Consumer<Integer> onPortSelected) {
+        JFrame frame = new JFrame("Choose Your Port");
+        frame.setLayout(new GridLayout(1, 3));
+
+        JLabel label = new JLabel("Choose port to listen");
+        JTextField field = new JTextField();
+        JButton button = new JButton("Select");
+
+        button.addActionListener(e -> {
+            String portStr = field.getText();
+            int port = portStr.isEmpty()
+                    ? CommuniDirect.defaultPort
+                    : communiDirect.parsePort(portStr, CommuniDirect.defaultPort);
+            frame.dispose();
+            onPortSelected.accept(port);
+        });
+
+        frame.add(label);
+        frame.add(field);
+        frame.add(button);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+}
