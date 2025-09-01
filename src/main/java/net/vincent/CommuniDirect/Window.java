@@ -15,6 +15,7 @@ public class Window extends JFrame {
 
         this.communiDirect = communiDirect;
 
+
         // === SERVER AREA ===
         serverArea = new JTextArea();
         serverArea.setEditable(false);
@@ -22,9 +23,11 @@ public class Window extends JFrame {
         serverScrollPane = new JScrollPane(serverArea);
         serverScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         serverScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        serverScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
 
         JPanel server = new JPanel(new BorderLayout());
         server.add(serverScrollPane, BorderLayout.CENTER);
+        server.add(new Command(communiDirect), BorderLayout.SOUTH);
 
         // === CLIENT FORM ===
         JLabel msgLabel = new JLabel("Message");
@@ -32,10 +35,14 @@ public class Window extends JFrame {
         JLabel portLabel = new JLabel("Port");
 
         JTextField msgF = new JTextField();
+        msgF.setBorder(BorderFactory.createLoweredBevelBorder());
         JTextField ipF = new JTextField();
+        ipF.setBorder(BorderFactory.createLoweredBevelBorder());
         JTextField portF = new JTextField();
+        portF.setBorder(BorderFactory.createLoweredBevelBorder());
 
         JButton sendButton = new JButton("Send");
+        sendButton.setBorder(BorderFactory.createRaisedBevelBorder());
 
         // Send button action
         sendButton.addActionListener(e -> {
@@ -58,6 +65,7 @@ public class Window extends JFrame {
         });
 
         JPanel client = new JPanel(new GridBagLayout());
+        client.setBorder(BorderFactory.createLoweredBevelBorder());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -118,6 +126,7 @@ public class Window extends JFrame {
         frame.add(button);
         frame.pack();
         frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         frame.setVisible(true);
     }
 }

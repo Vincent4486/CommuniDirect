@@ -1,6 +1,7 @@
 package net.vincent.CommuniDirect;
 
 import javax.swing.*;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -14,17 +15,32 @@ public class CommuniDirect {
     protected static int port_ = defaultPort;
     private ServerSocket serverSocket;
     private AtomicBoolean isServerRunning = new AtomicBoolean(false);
+    KeyHandler keyHandler;
+    PropertiesData propertiesData;
+    Command command;
 
     Window window;
 
     public CommuniDirect() {
+        propertiesData = new PropertiesData(this);
         window = new Window(this);
+        keyHandler = new KeyHandler(this);
+        command = new Command(this);
+
+        propertiesData.load();
 
         // Ask user for port and start server
-        window.setPort(port -> {
-            port_ = port;
+        if (port_ == defaultPort) {
+            // Only register the callback when port is 2556
+            window.setPort(p -> {
+                port_ = p;
+                new Thread(() -> startServer(port_)).start();
+                propertiesData.save();
+            });
+        } else {
+            // No setPort — just start a thread directly
             new Thread(() -> startServer(port_)).start();
-        });
+        }
     }
 
     public static void main(String[] args) {
@@ -53,15 +69,21 @@ public class CommuniDirect {
         try {
             serverSocket = new ServerSocket(port);
             logServer("Listening on port " + port);
+            logServer("type ? to see how to change it");
 
             while (isServerRunning.get()) {
                 try (Socket clientSocket = serverSocket.accept();
-                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+
+                ) {
+
+                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 
                     String clientAddress = clientSocket.getInetAddress().getHostAddress();
                     String message;
                     while ((message = in.readLine()) != null) {
                         logServer("Received from " + clientAddress + ": " + message);
+                        out.println("Server received message");
                     }
                 } catch (SocketException e) {
                     if (isServerRunning.get()) {
@@ -92,6 +114,7 @@ public class CommuniDirect {
         if (serverSocket != null && !serverSocket.isClosed()) {
             try {
                 serverSocket.close();
+                logServer("Successfully closed server");
             } catch (IOException e) {
                 logServer("Error closing server: " + e.getMessage());
             }
