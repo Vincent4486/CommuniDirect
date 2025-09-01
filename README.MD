@@ -1,4 +1,6 @@
 # CommuniDirect
-Thi is an app that can make you communicate directly to other people.
+This is an app that can make you communicate directly to other people.
 
-_Reminder: If the target server is not online, the message would not cache up in your app._
+It contains a shell prompt to sent, recive, import and much more tools to use, you can type ? in the command line to have help.
+
+This also contains a cache system to cache messages is the target server is not online.
