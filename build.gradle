@@ -18,6 +18,10 @@ dependencies {
 
 }
 
+javadoc {
+    destinationDir = file("$rootDir/docs")
+}
+
 // Configure the main source set to use "src" as the directory for Java sources
 // and "res" for resources.
 sourceSets {
