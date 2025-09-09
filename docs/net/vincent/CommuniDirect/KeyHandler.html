@@ -92,6 +92,11 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">KeyHandler</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desktop/java/awt/event/ActionListener.html" title="class or interface in java.awt.event" class="external-link">ActionListener</a></span></div>
+<div class="block"><code>KeyHandler</code> is an <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desktop/java/awt/event/ActionListener.html" title="class or interface in java.awt.event" class="external-link"><code>ActionListener</code></a> implementation that listens for
+ command input events from the <a href="Command.html" title="class in net.vincent.CommuniDirect"><code>Command</code></a> text field in the CommuniDirect application.
+ <p>
+ When a user presses Enter in the command field, this handler triggers the execution
+ of the entered command by calling <code>execCommand()</code> on the <code>Command</code> instance.</div>
 </div>
 </section>
 <section class="summary">
@@ -105,7 +110,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desk
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(net.vincent.CommuniDirect.CommuniDirect)" class="member-name-link">KeyHandler</a><wbr>(<a href="CommuniDirect.html" title="class in net.vincent.CommuniDirect">CommuniDirect</a>&nbsp;communiDirect)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a <code>KeyHandler</code> and associates it with the given CommuniDirect instance.</div>
+</div>
 </div>
 </section>
 </li>
@@ -122,7 +129,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desk
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#actionPerformed(java.awt.event.ActionEvent)" class="member-name-link">actionPerformed</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desktop/java/awt/event/ActionEvent.html" title="class or interface in java.awt.event" class="external-link">ActionEvent</a>&nbsp;e)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Called when an action event is triggered (e.g., user presses Enter in the command field).</div>
+</div>
 </div>
 </div>
 </div>
@@ -145,6 +154,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desk
 <h3>KeyHandler</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">KeyHandler</span><wbr><span class="parameters">(<a href="CommuniDirect.html" title="class in net.vincent.CommuniDirect">CommuniDirect</a>&nbsp;communiDirect)</span></div>
+<div class="block">Constructs a <code>KeyHandler</code> and associates it with the given CommuniDirect instance.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>communiDirect</code> - The main application instance to interact with.</dd>
+</dl>
 </div>
 </section>
 </li>
@@ -161,9 +175,13 @@ implements <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desk
 <h3>actionPerformed</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">actionPerformed</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desktop/java/awt/event/ActionEvent.html" title="class or interface in java.awt.event" class="external-link">ActionEvent</a>&nbsp;e)</span></div>
+<div class="block">Called when an action event is triggered (e.g., user presses Enter in the command field).
+ Executes the command entered in the <a href="Command.html" title="class in net.vincent.CommuniDirect"><code>Command</code></a> text field.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desktop/java/awt/event/ActionListener.html#actionPerformed(java.awt.event.ActionEvent)" title="class or interface in java.awt.event" class="external-link">actionPerformed</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desktop/java/awt/event/ActionListener.html" title="class or interface in java.awt.event" class="external-link">ActionListener</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>e</code> - The action event triggered by the user.</dd>
 </dl>
 </div>
 </section>

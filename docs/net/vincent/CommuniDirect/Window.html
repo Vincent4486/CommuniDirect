@@ -103,6 +103,16 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Window</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.desktop/javax/swing/JFrame.html" title="class or interface in javax.swing" class="external-link">JFrame</a></span></div>
+<div class="block"><code>Window</code> is the main graphical user interface for the CommuniDirect application.
+ It provides both server-side logging and client-side message sending capabilities.
+
+ <p>The window is split into two panels:
+ <ul>
+   <li><b>Server Panel</b>: Displays incoming messages and includes a command input field</li>
+   <li><b>Client Panel</b>: Allows users to send messages to a specified IP and port</li>
+ </ul>
+
+ <p>It also includes a dynamic port selection dialog via <a href="#setPort(java.util.function.Consumer)"><code>setPort(Consumer)</code></a>.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -166,7 +176,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(net.vincent.CommuniDirect.CommuniDirect)" class="member-name-link">Window</a><wbr>(<a href="CommuniDirect.html" title="class in net.vincent.CommuniDirect">CommuniDirect</a>&nbsp;communiDirect)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs the main application window with server and client panels.</div>
+</div>
 </div>
 </section>
 </li>
@@ -183,7 +195,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPort(java.util.function.Consumer)" class="member-name-link">setPort</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;onPortSelected)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Displays a dialog allowing the user to select a port number.</div>
+</div>
 </div>
 </div>
 </div>
@@ -224,6 +238,11 @@ loadScripts(document, 'script');</script>
 <h3>Window</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Window</span><wbr><span class="parameters">(<a href="CommuniDirect.html" title="class in net.vincent.CommuniDirect">CommuniDirect</a>&nbsp;communiDirect)</span></div>
+<div class="block">Constructs the main application window with server and client panels.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>communiDirect</code> - The main application instance.</dd>
+</dl>
 </div>
 </section>
 </li>
@@ -240,6 +259,12 @@ loadScripts(document, 'script');</script>
 <h3>setPort</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPort</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;onPortSelected)</span></div>
+<div class="block">Displays a dialog allowing the user to select a port number.
+ Once selected, the provided callback is invoked with the chosen port.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>onPortSelected</code> - A <code>Consumer&lt;Integer&gt;</code> that receives the selected port.</dd>
+</dl>
 </div>
 </section>
 </li>
