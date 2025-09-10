@@ -2,6 +2,7 @@ package net.vincent.CommuniDirect;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * The {@code Command} class is a custom text field component that allows users to enter
@@ -11,6 +12,7 @@ import java.awt.*;
  * <ul>
  *   <li><b>port --changedefault [value]</b>: Changes the default port and saves it to properties</li>
  *   <li><b>port --changecurrent [value]</b>: Changes the current port and restarts the server</li>
+ *   <li><b>send [ip] [port] [message]</b>: Sends a message the same as the GUI at the right</li>
  *   <li><b>quit</b>: Exits the application</li>
  * </ul>
  *
@@ -30,6 +32,7 @@ public class Command extends JTextField {
      *
      * @param communiDirect The main application instance to interact with.
      */
+    @EntryPoint(EntryType.COMMAND)
     public Command(CommuniDirect communiDirect) {
         this.communiDirect = communiDirect;
 
@@ -45,12 +48,16 @@ public class Command extends JTextField {
      *
      * @param cmd The raw command string.
      */
-    public void execCommand(String cmd) {
+    @EntryPoint(EntryType.COMMAND)
+    protected void execCommand(String cmd) {
         String[] commandArray = tokenize(cmd);
 
         switch (commandArray[0]) {
             case "port":
                 portCMD(commandArray);
+                break;
+            case "send":
+                sendCMD(commandArray);
                 break;
             case "quit":
                 System.exit(0);
@@ -64,7 +71,7 @@ public class Command extends JTextField {
      * @param cmd The raw command string.
      * @return An array of command tokens.
      */
-    public String[] tokenize(String cmd) {
+    private String[] tokenize(String cmd) {
         return cmd.split(" ");
     }
 
@@ -78,7 +85,7 @@ public class Command extends JTextField {
      *
      * @param cmd The tokenized command array.
      */
-    public void portCMD(String[] cmd) {
+    private void portCMD(String[] cmd) {
         for (int i = 1; i < cmd.length; i++) {
             String flag = cmd[i].toLowerCase();
 
@@ -119,5 +126,40 @@ public class Command extends JTextField {
                     break;
             }
         }
+    }
+
+    /**
+     * Handles the {@code send} command and its flags.
+     * <p>Required flags:
+     * <ul>
+     *   <li>{@code [ip]}: Sets the IP address of the target</li>
+     *   <li>{@code [port]}: Sets the port to send to the target</li>
+     *   <li>{@code [message]}: Sets the message to send to the target</li>
+     * </ul>
+     * @param cmd The tokenized command array.
+     */
+    private void sendCMD(String[] cmd){
+
+        if (cmd.length < 4) {
+            communiDirect.logClient("❌ Missing arguments for 'send' command.");
+            communiDirect.logClient("✅ Usage: send <IP> <port> <msg>");
+            communiDirect.logClient("📝 You provided " + cmd.length + " argument(s): " + Arrays.toString(cmd));
+        } else {
+            try {
+                int port = Integer.parseInt(cmd[2]);
+                communiDirect.sendMessage(cmd[1], port, cmd[3]);
+                communiDirect.logClient("📤 Attempting to send message...");
+            } catch (NumberFormatException e) {
+                communiDirect.logClient("❌ Port must be a number. You entered: '" + cmd[2] + "'");
+            } catch (Exception e) {
+                communiDirect.logClient("⚠️ Unexpected error: " + e.getMessage());
+            }
+
+            // Continue running the program
+            communiDirect.logClient("🔄 Ready for next command.");
+
+
+        }
+
     }
 }
