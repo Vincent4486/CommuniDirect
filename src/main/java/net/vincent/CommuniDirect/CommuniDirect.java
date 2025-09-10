@@ -1,7 +1,6 @@
 package net.vincent.CommuniDirect;
 
 import javax.swing.*;
-import java.awt.event.KeyListener;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -51,6 +50,7 @@ public class CommuniDirect {
      * Initializes the CommuniDirect application.
      * Loads configuration, sets up UI, and starts the server based on user input or default settings.
      */
+    @EntryPoint(EntryType.NETWORK)
     public CommuniDirect() {
         propertiesData = new PropertiesData(this);
         window = new Window(this);
@@ -75,6 +75,7 @@ public class CommuniDirect {
      *
      * @param args Command-line arguments (unused).
      */
+    @EntryPoint(EntryType.UI)
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
@@ -109,6 +110,7 @@ public class CommuniDirect {
      *
      * @param port The port to bind the server to.
      */
+    @EntryPoint(EntryType.NETWORK)
     protected void startServer(int port) {
         isServerRunning.set(true);
         try {
@@ -155,6 +157,7 @@ public class CommuniDirect {
     /**
      * Stops the server and closes the socket.
      */
+    @EntryPoint(EntryType.NETWORK)
     public void stopServer() {
         isServerRunning.set(false);
         if (serverSocket != null && !serverSocket.isClosed()) {
@@ -175,6 +178,7 @@ public class CommuniDirect {
      * @param port    Target server port.
      * @param message Message to send.
      */
+    @EntryPoint(EntryType.NETWORK)
     protected void sendMessage(String ip, int port, String message) {
         new Thread(() -> {
             try {
@@ -188,6 +192,7 @@ public class CommuniDirect {
                     String response = in.readLine();
                     logClient("Server replied: " + response);
                 }
+
 
                 socket.close();
             } catch (SocketTimeoutException e) {
@@ -225,6 +230,7 @@ public class CommuniDirect {
      *
      * @param message Message to log.
      */
+    @EntryPoint(EntryType.UTILITY)
     protected synchronized void log(String message) {
         if (!logBuffer.isEmpty() && logBuffer.get(logBuffer.size() - 1).equals(message)) {
             return;
