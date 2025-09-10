@@ -292,7 +292,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;()">
 <h3>CommuniDirect</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CommuniDirect</span>()</div>
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#NETWORK">NETWORK</a>)
+</span><span class="modifiers">public</span>&nbsp;<span class="element-name">CommuniDirect</span>()</div>
 <div class="block">Initializes the CommuniDirect application.
  Loads configuration, sets up UI, and starts the server based on user input or default settings.</div>
 </div>
@@ -310,7 +311,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="main(java.lang.String[])">
 <h3>main</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">main</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</span></div>
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#UI">UI</a>)
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">main</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;args)</span></div>
 <div class="block">Launches the CommuniDirect application on the Swing event dispatch thread.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -341,7 +343,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="startServer(int)">
 <h3>startServer</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startServer</span><wbr><span class="parameters">(int&nbsp;port)</span></div>
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#NETWORK">NETWORK</a>)
+</span><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">startServer</span><wbr><span class="parameters">(int&nbsp;port)</span></div>
 <div class="block">Starts the server on the specified port.
  Accepts client connections and logs incoming messages.</div>
 <dl class="notes">
@@ -355,7 +358,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="stopServer()">
 <h3>stopServer</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stopServer</span>()</div>
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#NETWORK">NETWORK</a>)
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stopServer</span>()</div>
 <div class="block">Stops the server and closes the socket.</div>
 </div>
 </section>
@@ -364,7 +368,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="sendMessage(java.lang.String,int,java.lang.String)">
 <h3>sendMessage</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">sendMessage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ip,
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#NETWORK">NETWORK</a>)
+</span><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">sendMessage</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ip,
  int&nbsp;port,
  <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message)</span></div>
 <div class="block">Sends a message to a server at the specified IP and port.
@@ -408,7 +413,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="log(java.lang.String)">
 <h3>log</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">log</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message)</span></div>
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#UTILITY">UTILITY</a>)
+</span><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">log</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message)</span></div>
 <div class="block">Core logging method that updates the log buffer and UI.</div>
 <dl class="notes">
 <dt>Parameters:</dt>

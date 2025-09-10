@@ -72,8 +72,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#execCommand(java.lang.String)" tabindex="0">execCommand(String)</a></li>
-<li><a href="#tokenize(java.lang.String)" tabindex="0">tokenize(String)</a></li>
-<li><a href="#portCMD(java.lang.String%5B%5D)" tabindex="0">portCMD(String[])</a></li>
 </ol>
 </li>
 </ol>
@@ -112,6 +110,7 @@ loadScripts(document, 'script');</script>
  <ul>
    <li><b>port --changedefault [value]</b>: Changes the default port and saves it to properties</li>
    <li><b>port --changecurrent [value]</b>: Changes the current port and restarts the server</li>
+   <li><b>send [ip] [port] [message]</b>: Sends a message the same as the GUI at the right</li>
    <li><b>quit</b>: Exits the application</li>
  </ul>
 
@@ -200,20 +199,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execCommand(java.lang.String)" class="member-name-link">execCommand</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;cmd)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Executes a command string entered by the user.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#portCMD(java.lang.String%5B%5D)" class="member-name-link">portCMD</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;cmd)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Handles the <code>port</code> command and its flags.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tokenize(java.lang.String)" class="member-name-link">tokenize</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;cmd)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Tokenizes a command string into an array of arguments.</div>
 </div>
 </div>
 </div>
@@ -251,7 +240,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(net.vincent.CommuniDirect.CommuniDirect)">
 <h3>Command</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Command</span><wbr><span class="parameters">(<a href="CommuniDirect.html" title="class in net.vincent.CommuniDirect">CommuniDirect</a>&nbsp;communiDirect)</span></div>
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#COMMAND">COMMAND</a>)
+</span><span class="modifiers">public</span>&nbsp;<span class="element-name">Command</span><wbr><span class="parameters">(<a href="CommuniDirect.html" title="class in net.vincent.CommuniDirect">CommuniDirect</a>&nbsp;communiDirect)</span></div>
 <div class="block">Constructs a <code>Command</code> input field and sets up its appearance and behavior.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -272,45 +262,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="execCommand(java.lang.String)">
 <h3>execCommand</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">execCommand</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;cmd)</span></div>
+<div class="member-signature"><span class="annotations"><a href="EntryPoint.html" title="annotation interface in net.vincent.CommuniDirect">@EntryPoint</a>(<a href="EntryType.html#COMMAND">COMMAND</a>)
+</span><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">execCommand</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;cmd)</span></div>
 <div class="block">Executes a command string entered by the user.
  Delegates to specific command handlers based on the first token.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>cmd</code> - The raw command string.</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="tokenize(java.lang.String)">
-<h3>tokenize</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</span>&nbsp;<span class="element-name">tokenize</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;cmd)</span></div>
-<div class="block">Tokenizes a command string into an array of arguments.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>cmd</code> - The raw command string.</dd>
-<dt>Returns:</dt>
-<dd>An array of command tokens.</dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="portCMD(java.lang.String[])">
-<h3>portCMD</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">portCMD</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]&nbsp;cmd)</span></div>
-<div class="block">Handles the <code>port</code> command and its flags.
- <p>Supported flags:
- <ul>
-   <li><code>--changedefault [port]</code>: Updates the default port and saves it</li>
-   <li><code>--changecurrent [port]</code>: Changes the current port and restarts the server</li>
- </ul></div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>cmd</code> - The tokenized command array.</dd>
 </dl>
 </div>
 </section>
