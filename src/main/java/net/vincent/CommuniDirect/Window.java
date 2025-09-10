@@ -35,6 +35,7 @@ public class Window extends JFrame {
      *
      * @param communiDirect The main application instance.
      */
+    @EntryPoint(EntryType.UI)
     public Window(CommuniDirect communiDirect) {
         this.communiDirect = communiDirect;
 
@@ -129,6 +130,7 @@ public class Window extends JFrame {
      *
      * @param onPortSelected A {@code Consumer<Integer>} that receives the selected port.
      */
+    @EntryPoint(EntryType.NETWORK)
     public void setPort(Consumer<Integer> onPortSelected) {
         JFrame frame = new JFrame("Choose Your Port");
         frame.setLayout(new GridLayout(1, 3));

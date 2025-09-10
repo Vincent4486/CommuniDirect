@@ -36,6 +36,7 @@ public class PropertiesData {
      *
      * @param communiDirect The main application instance.
      */
+    @EntryPoint(EntryType.IO)
     public PropertiesData(CommuniDirect communiDirect) {
         this.communiDirect = communiDirect;
     }
@@ -44,6 +45,7 @@ public class PropertiesData {
      * Loads configuration from the properties file.
      * If the file does not exist, it creates a new one with default values.
      */
+    @EntryPoint(EntryType.IO)
     public void load() {
         try (FileInputStream fileInputStream = new FileInputStream(path)) {
             Properties properties = new Properties();
@@ -59,6 +61,7 @@ public class PropertiesData {
     /**
      * Saves the current configuration (e.g., port number) to the properties file.
      */
+    @EntryPoint(EntryType.IO)
     public void save() {
         try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
             Properties properties = new Properties();
@@ -73,6 +76,7 @@ public class PropertiesData {
      * Creates a new properties file with default values.
      * This is typically called when no existing configuration file is found.
      */
+    @EntryPoint(EntryType.IO)
     public void create() {
         try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
             Properties properties = new Properties();

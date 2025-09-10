@@ -23,6 +23,7 @@ public class KeyHandler implements ActionListener {
      *
      * @param communiDirect The main application instance to interact with.
      */
+    @EntryPoint(EntryType.BACKGROUND)
     public KeyHandler(CommuniDirect communiDirect) {
         this.communiDirect = communiDirect;
     }
