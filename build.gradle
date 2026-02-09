@@ -11,8 +11,15 @@ repositories {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        // This is the version Gradle will look for or download
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// Ensures the compiled code is Java 17 compatible
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
 }
 
 application {
@@ -30,17 +37,14 @@ javadoc {
 jar {
     manifest {
         attributes(
-                'Main-Class': application.mainClass,
-                'Implementation-Title': project.name,
-                'Implementation-Version': project.version
+            'Main-Class': application.mainClass,
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version
         )
     }
-
     from sourceSets.main.output
-
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
