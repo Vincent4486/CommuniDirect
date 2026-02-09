@@ -12,26 +12,30 @@ repositories {
 
 java {
     toolchain {
-        // This is the version Gradle will look for or download
-        languageVersion = JavaLanguageVersion.of(17)
+        // This tells Gradle: "If you don't see JDK 24, download it automatically."
+        languageVersion = JavaLanguageVersion.of(24)
     }
 }
 
-// Ensures the compiled code is Java 17 compatible
 tasks.withType(JavaCompile).configureEach {
-    options.release = 17
+    // This allows you to use Java 24 features. 
+    // NOTE: If you need to run this on a Java 17 server later, change this to 17.
+    options.release = 24
 }
 
 application {
     mainClass = 'net.vincent.communidirect.CommuniDirect'
 }
 
+// Enables terminal input (Scanner) when running via Gradle
 tasks.named('run', JavaExec) {
     standardInput = System.in
 }
 
+// Javadoc configuration for your FreeBSD web server
 javadoc {
     destinationDir = file("$rootDir/docs")
+    options.encoding = 'UTF-8'
 }
 
 jar {
