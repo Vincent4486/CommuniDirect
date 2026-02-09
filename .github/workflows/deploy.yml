@@ -44,6 +44,21 @@ jobs:
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          echo "Deployment successful."
-          # If you have a systemd service for CommuniDirect, restart it here:
-          # sudo service communidirect restart
+          mkdir -p ~/deploy
+          cd ~/deploy
+          # Clean up old clone if it exists, then clone fresh
+          rm -rf CommuniDirect
+          git clone https://github.com/Vincent4486/CommuniDirect
+          cd CommuniDirect
+          
+          # Ensure gradlew is executable and run javadoc
+          chmod +x gradlew
+          ./gradlew javadoc
+          
+          # Sync to the web directory
+          sudo mkdir -p /var/webdocs/CommuniDirect
+          sudo cp -r build/docs/javadoc/* /var/webdocs/CommuniDirect/
+          
+          # Cleanup
+          cd ~/
+          rm -rf ~/deploy/CommuniDirect
