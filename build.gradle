@@ -12,8 +12,9 @@ repositories {
 
 java {
     toolchain {
-        // This tells Gradle: "If you don't see JDK 24, download it automatically."
         languageVersion = JavaLanguageVersion.of(24)
+        // Explicitly use Adoptium (Temurin) to avoid the IBM_SEMERU error
+        vendor = JvmVendorSpec.ADOPTIUM
     }
 }
 
