@@ -26,17 +26,6 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build javadoc
 
-    - name: Deploy to FreeBSD Server
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # Syncs the JAR and the generated /docs folder
-        source: "build/libs/*.jar,docs/**"
-        target: "/home/vincent/CommuniDirect_Deploy"
-        strip_components: 0
-
     - name: Refresh Application on Server
       uses: appleboy/ssh-action@master
       with:
