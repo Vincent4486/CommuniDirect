@@ -45,6 +45,9 @@ public class CommuniDirect {
 
     /** Main application window. */
     Window window;
+    
+    /** The history manager */
+    History history;
 
     /**
      * Initializes the CommuniDirect application.
@@ -56,6 +59,7 @@ public class CommuniDirect {
         window = new Window(this);
         keyHandler = new KeyHandler(this);
         command = new Command(this);
+        history = new History(this);
 
         propertiesData.load();
 

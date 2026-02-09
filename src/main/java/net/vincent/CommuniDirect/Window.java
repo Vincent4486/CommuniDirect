@@ -19,6 +19,7 @@ import java.util.function.Consumer;
  * @author Vincent
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class Window extends JFrame {
 
     /** Reference to the main CommuniDirect application instance. */

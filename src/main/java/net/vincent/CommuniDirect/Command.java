@@ -22,6 +22,7 @@ import java.util.Arrays;
  * @author Vincent
  * @version 1.0
  */
+@SuppressWarnings("serial")
 public class Command extends JTextField {
 
     /** Reference to the main CommuniDirect application instance. */
@@ -62,6 +63,9 @@ public class Command extends JTextField {
             case "quit":
                 System.exit(0);
                 break;
+            case "exit":
+            	System.exit(0);
+            	break;
         }
     }
 
@@ -157,9 +161,6 @@ public class Command extends JTextField {
 
             // Continue running the program
             communiDirect.logClient("🔄 Ready for next command.");
-
-
         }
-
     }
 }
