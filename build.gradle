@@ -13,8 +13,6 @@ repositories {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(24)
-        // Explicitly use Adoptium (Temurin) to avoid the IBM_SEMERU error
-        vendor = JvmVendorSpec.ADOPTIUM
     }
 }
 
