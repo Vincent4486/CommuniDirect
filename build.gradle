@@ -4,65 +4,43 @@ plugins {
 }
 
 group = 'net.vincent'
-version = '1.0.0'
+version = '1.1.0'
 
 repositories {
     mavenCentral()
 }
 
-tasks.named('run', JavaExec) {
-    // Forward your terminal’s input stream to the Java process
-    standardInput = System.in
+java {
+    sourceCompatibility = JavaVersion.VERSION_23
+    targetCompatibility = JavaVersion.VERSION_23
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
 }
-dependencies {
 
+application {
+    mainClass = 'net.vincent.communidirect.CommuniDirect'
+}
+
+tasks.named('run', JavaExec) {
+    standardInput = System.in
 }
 
 javadoc {
     destinationDir = file("$rootDir/docs")
 }
 
-// Configure the main source set to use "src" as the directory for Java sources
-// and "res" for resources.
-sourceSets {
-    main {
-        java {
-            // Adjust this if your source files are directly under "src", or use "src/java" if organized that way.
-            srcDirs = ['src/main/java']
-        }
-    }
-}
-
-application {
-    // Set your fully qualified main class name.
-    // Make sure the package declaration at the top of your Java file matches this.
-    mainClass = 'net.vincent.CommuniDirect.CommuniDirect'
-}
-
-// Set Java source and target compatibility using the new DSL.
-java {
-    sourceCompatibility = JavaVersion.VERSION_23
-    targetCompatibility = JavaVersion.VERSION_23
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(23) // or 17
-    }
-}
-
 jar {
     manifest {
         attributes(
-                'Main-Class': 'net.vincent.CommuniDirect.CommuniDirect',
+                'Main-Class': application.mainClass,
                 'Implementation-Title': project.name,
-                'Implementation-Version': 'Beta1_0'
+                'Implementation-Version': project.version
         )
     }
 
-    // Include the compiled class files and resources.
     from sourceSets.main.output
 
-    // Explicitly include the "res" folder from the project root if needed.
-    // This copies the folder from your project root into the jar under "res".
-    // Package the runtime dependencies (creating a fat jar).
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
