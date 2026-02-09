@@ -1,4 +1,4 @@
-package net.vincent.CommuniDirect;
+package net.vincent.communidirect;
 
 /**
  * The {@code History} class is the history manager for the
