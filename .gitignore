@@ -42,4 +42,6 @@ bin/
 .DS_Store
 
 docs/
+
+### Other files ###
 communidirect.properties
