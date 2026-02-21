@@ -11,12 +11,17 @@ public class ClientHandler {
         this.serverLauncher = serverLauncher;
     }
 
+    private void handleClient(Socket clientSocket) {
+
+    }
+
     private void listenLoop() {
         Socket clientSocket;
         while (true) {
             try {
                 clientSocket = serverSocket.accept();
                 serverLauncher.accessLog.logAccess(clientSocket);
+                handleClient(clientSocket);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
