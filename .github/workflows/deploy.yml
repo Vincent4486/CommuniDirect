@@ -44,8 +44,8 @@ jobs:
           ./gradlew aggregatedJavadoc
           
           # Sync the aggregated results to the web directory
-          sudo mkdir -p /var/webdocs/CommuniDirect
-          sudo cp -r build/docs/javadoc/* /var/webdocs/CommuniDirect/
+          mkdir -p /var/webdocs/CommuniDirect
+          cp -r docs/* /var/webdocs/CommuniDirect/
           
           # Cleanup
           cd ~/
