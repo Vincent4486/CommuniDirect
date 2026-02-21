@@ -3,11 +3,15 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
     }
+    plugins {
+        // Define version for the settings context
+        id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    }
 }
 
 plugins {
-    // Uses the version defined in your TOML catalog
-    alias(libs.plugins.foojay.resolver)
+    // This plugin now automatically handles the 'foojay' repository registration
+    id 'org.gradle.toolchains.foojay-resolver-convention'
 }
 
 rootProject.name = 'communidirect'

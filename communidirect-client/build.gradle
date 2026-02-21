@@ -3,11 +3,17 @@ plugins {
 }
 
 dependencies {
+    implementation libs.lanterna
+
     implementation project(':communidirect-common')
 }
 
 application {
     mainClass = 'net.vincent.communidirect.client.ClientLauncher'
+}
+
+run {
+    standardInput = System.in
 }
 
 jar {

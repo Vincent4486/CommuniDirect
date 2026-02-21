@@ -1,16 +1,10 @@
 [versions]
-# Project versions
 java = "24"
 communidirect = "1.1.0"
-
-# Plugin versions
-foojay = "1.0.0"
-
-# Library versions (Add your networking libs here)
-# Example: gson = "2.10.1"
+lanterna = "3.1.2"
 
 [libraries]
-# Example: google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+lanterna = { group = "com.googlecode.lanterna", name = "lanterna", version.ref = "lanterna" }
 
 [plugins]
-foojay-resolver = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay" }
+foojay-resolver = { id = "org.gradle.toolchains.foojay-resolver-convention", version = "0.8.0" }
