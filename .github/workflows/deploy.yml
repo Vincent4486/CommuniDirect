@@ -26,27 +26,13 @@ jobs:
     - name: Build and Aggregate Docs
       run: ./gradlew clean build aggregatedJavadoc
 
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@master
+    - name: Deploy Javadocs via SCP
+      uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          mkdir -p ~/deploy
-          cd ~/deploy
-          rm -rf CommuniDirect
-          git clone https://github.com/Vincent4486/CommuniDirect
-          cd CommuniDirect
-          
-          chmod +x gradlew
-          # Use the aggregated task on the server as well
-          ./gradlew aggregatedJavadoc
-          
-          # Sync the aggregated results to the web directory
-          mkdir -p /var/webdocs/CommuniDirect
-          cp -r docs/* /var/webdocs/CommuniDirect/
-          
-          # Cleanup
-          cd ~/
-          rm -rf ~/deploy/CommuniDirect
+        # This takes the files built on the runner and sends them to the server
+        source: "docs/*"
+        target: "/var/webdocs/CommuniDirect"
+        strip_components: 1
