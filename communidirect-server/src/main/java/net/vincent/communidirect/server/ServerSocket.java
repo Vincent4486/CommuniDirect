@@ -17,8 +17,8 @@ public class ServerSocket {
     }
 
     private void bindSocket(){
-        try(java.net.ServerSocket serverSocket = new java.net.ServerSocket(port, 0, ip)){
-            this.serverSocket = serverSocket;
+        try {
+            this.serverSocket = new java.net.ServerSocket(port, 0, ip);
         } catch (IOException e) {
             System.err.println("Failed to bind socket, trying to change the port.");
             e.printStackTrace();

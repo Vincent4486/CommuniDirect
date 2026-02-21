@@ -11,11 +11,12 @@ public class ClientHandler {
         this.serverLauncher = serverLauncher;
     }
 
-    private void ListenLoop() {
+    private void listenLoop() {
         Socket clientSocket;
         while (true) {
             try {
                 clientSocket = serverSocket.accept();
+                serverLauncher.accessLog.logAccess(clientSocket);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -24,6 +25,6 @@ public class ClientHandler {
 
     public void init(java.net.ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
-
+        listenLoop();
     }
 }
