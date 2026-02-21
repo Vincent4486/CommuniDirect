@@ -1,0 +1,3 @@
+dependencies {
+    // Shared libraries (like JSON parsers) go here
+}

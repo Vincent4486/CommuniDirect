@@ -1,6 +1,17 @@
-plugins {
-    // This is the resolver that finds and downloads the JDKs
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
 }
 
-rootProject.name = 'CommuniDirect'
+plugins {
+    // Uses the version defined in your TOML catalog
+    alias(libs.plugins.foojay.resolver)
+}
+
+rootProject.name = 'communidirect'
+
+include 'communidirect-common'
+include 'communidirect-server'
+include 'communidirect-client'

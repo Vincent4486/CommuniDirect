@@ -1,0 +1,18 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':communidirect-common')
+}
+
+application {
+    mainClass = 'net.vincent.communidirect.server.ServerLauncher'
+}
+
+// Fat JAR for easy deployment on FreeBSD
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest { attributes 'Main-Class': application.mainClass }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}

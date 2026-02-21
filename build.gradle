@@ -1,53 +1,21 @@
-plugins {
-    id 'java'
-    id 'application'
-}
+subprojects {
+    apply plugin: 'java'
 
-group = 'net.vincent'
-version = '1.1.0'
+    group = 'net.vincent'
+    version = libs.versions.communidirect.get()
 
-repositories {
-    mavenCentral()
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+    repositories {
+        mavenCentral()
     }
-}
 
-tasks.withType(JavaCompile).configureEach {
-    // This allows you to use Java 24 features. 
-    // NOTE: If you need to run this on a Java 17 server later, change this to 17.
-    options.release = 24
-}
-
-application {
-    mainClass = 'net.vincent.communidirect.CommuniDirect'
-}
-
-// Enables terminal input (Scanner) when running via Gradle
-tasks.named('run', JavaExec) {
-    standardInput = System.in
-}
-
-// Javadoc configuration for your FreeBSD web server
-javadoc {
-    destinationDir = file("$rootDir/docs")
-    options.encoding = 'UTF-8'
-}
-
-jar {
-    manifest {
-        attributes(
-            'Main-Class': application.mainClass,
-            'Implementation-Title': project.name,
-            'Implementation-Version': project.version
-        )
+    java {
+        toolchain {
+            // Pulls "24" from the TOML file
+            languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
+        }
     }
-    from sourceSets.main.output
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.release = libs.versions.java.get().toInteger()
     }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

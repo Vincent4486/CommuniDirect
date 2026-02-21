@@ -1,0 +1,19 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':communidirect-common')
+}
+
+application {
+    mainClass = 'net.vincent.communidirect.client.ClientLauncher'
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': application.mainClass)
+    }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
