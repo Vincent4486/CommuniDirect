@@ -7,8 +7,15 @@ package net.vincent.communidirect.common;
  * <p>All submodules (server, client, common utilities) reference these values
  * through {@link net.vincent.communidirect.common.config.SettingsManager} so
  * that defaults are defined in exactly one place.
+ *
+ * <p>This class cannot be instantiated.
  */
-public class Defaults {
+public final class Defaults {
+    /**
+     * Private constructor – prevents instantiation of this utility class.
+     */
+    private Defaults() {
+    }
     /** Default TCP port on which the server listens for incoming CDIR connections. */
     public static final int    DEFAULT_PORT            = 9833;
 

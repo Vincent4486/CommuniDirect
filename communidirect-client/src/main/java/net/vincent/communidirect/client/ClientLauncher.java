@@ -19,6 +19,12 @@ import net.vincent.communidirect.common.crypto.KeyStoreManager;
 public class ClientLauncher {
 
     /**
+     * Private constructor – this class is a utility bootstrap container and should not be instantiated.
+     */
+    private ClientLauncher() {
+    }
+
+    /**
      * Application entry point.
      *
      * @param args command-line arguments (currently unused)

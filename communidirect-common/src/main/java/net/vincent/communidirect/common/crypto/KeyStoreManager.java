@@ -150,7 +150,11 @@ public class KeyStoreManager {
     // Accessors
     // -------------------------------------------------------------------------
 
-    /** Returns the local Ed25519 private key. */
+    /**
+     * Returns the local Ed25519 private key.
+     *
+     * @return this system's Ed25519 private key for signing outbound messages
+     */
     public PrivateKey getPrivateKey() {
         return privateKey;
     }
@@ -158,6 +162,8 @@ public class KeyStoreManager {
     /**
      * Returns the server's own 32-byte raw Ed25519 public key, loaded from
      * {@code keys/self.pub}.  Required by {@link net.vincent.communidirect.common.proto.CdirMessage#decode}.
+     *
+     * @return the local 32-byte raw Ed25519 public key
      */
     public byte[] getOwnPublicKeyRaw() {
         return ownPublicKeyRaw;
@@ -167,6 +173,7 @@ public class KeyStoreManager {
      * Returns the public key for a peer alias, or {@code null} if unknown.
      *
      * @param alias peer alias (filename without {@code .pub})
+     * @return the {@link PublicKey} for the alias, or {@code null} if not found
      */
     public PublicKey getPeerKey(String alias) {
         return peerKeys.get(alias);
@@ -175,6 +182,8 @@ public class KeyStoreManager {
     /**
      * Returns an unmodifiable view of all loaded peer public keys, keyed by
      * alias.
+     *
+     * @return an immutable map of peer aliases to their Ed25519 public keys
      */
     public Map<String, PublicKey> getAllPeerKeys() {
         return Collections.unmodifiableMap(peerKeys);

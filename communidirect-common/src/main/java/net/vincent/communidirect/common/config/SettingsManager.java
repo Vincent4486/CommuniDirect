@@ -138,6 +138,10 @@ public class SettingsManager {
 
     /**
      * Expands a leading {@code ~} to the current user's home directory.
+     *
+     * @param path the path string, possibly starting with {@code ~}
+     * @return the same path with {@code ~} replaced by the user's home directory,
+     *         or the original path if it does not start with {@code ~}
      */
     public static String resolveHome(String path) {
         if (path != null && path.startsWith("~")) {

@@ -50,8 +50,11 @@ public final class CdirMessage {
 
     /** Four ASCII bytes "CDIR" interpreted as a big-endian int. */
     public static final int  MAGIC       = 0x43444952;
+
+    /** Protocol version byte: 0x01 for CDIR v1. */
     public static final byte VERSION     = 0x01;
 
+    /** Total size of the fixed message header in bytes: 361 (4 + 1 + 64 + 32 + 256 + 4). */
     public static final int HEADER_SIZE  = 4 + 1 + 64 + 32 + 256 + 4; // 361 bytes
 
     private static final int OFF_MAGIC      =   0;

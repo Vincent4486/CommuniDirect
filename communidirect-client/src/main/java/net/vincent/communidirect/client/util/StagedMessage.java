@@ -7,9 +7,16 @@ package net.vincent.communidirect.client.util;
  */
 public final class StagedMessage {
 
+    /** Destination IPv4/IPv6 address or hostname for message delivery. */
     public final String targetIp;
+
+    /** Destination TCP port for the remote server. */
     public final int    port;
+
+    /** Alias of the recipient's public key in the local key store. */
     public final String keyName;
+
+    /** Plaintext message body. */
     public final String body;
 
     /**
@@ -28,7 +35,11 @@ public final class StagedMessage {
         this.body     = (body     != null) ? body             : "";
     }
 
-    /** Returns {@code true} when all required fields are filled in. */
+    /**
+     * Returns {@code true} when all required fields are filled in.
+     *
+     * @return {@code true} if targetIp, keyName, and body are all non-empty; {@code false} otherwise
+     */
     public boolean isValid() {
         return !targetIp.isEmpty() && !keyName.isEmpty() && !body.isBlank();
     }
