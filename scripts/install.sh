@@ -28,7 +28,7 @@ echo "📦 Creating binary wrappers in /usr/local/bin..."
 for APP in "server" "client"; do
     cat <<EOF | sudo tee /usr/local/bin/cd-$APP > /dev/null
 #!/bin/bash
-java -jar "$BIN_DIR/$APP.jar" "\$@"
+java -Xms10m -Xmx100m -jar "$BIN_DIR/$APP.jar" "\$@"
 EOF
     sudo chmod +x /usr/local/bin/cd-$APP
 done
@@ -46,7 +46,7 @@ if [[ "$OS_TYPE" == "Darwin" ]]; then
 <dict>
     <key>Label</key><string>net.vincent.communidirect</string>
     <key>ProgramArguments</key>
-    <array><string>$(which java)</string><string>-jar</string><string>$BIN_DIR/server.jar</string></array>
+    <array><string>$(which java)</string><string>-Xms10m</string><string>-Xmx100m</string><string>-jar</string><string>$BIN_DIR/server.jar</string></array>
     <key>RunAtLoad</key><true/><key>KeepAlive</key><true/>
     <key>StandardOutPath</key><string>$LOG_DIR/access.log</string>
     <key>StandardErrorPath</key><string>$LOG_DIR/err.log</string>
@@ -70,7 +70,7 @@ elif [[ "$OS_TYPE" == "FreeBSD" ]]; then
 name="communidirect"
 rcvar="communidirect_enable"
 command="$(which java)"
-command_args="-jar $BIN_DIR/server.jar > /dev/null 2>&1 &"
+command_args="-Xms10m -Xmx100m -jar $BIN_DIR/server.jar > /dev/null 2>&1 &"
 
 load_rc_config \$name
 run_rc_command "\$1"
@@ -88,7 +88,7 @@ Description=CommuniDirect Server
 After=network.target
 [Service]
 User=$USER
-ExecStart=$(which java) -jar $BIN_DIR/server.jar
+ExecStart=$(which java) -Xms10m -Xmx100m -jar $BIN_DIR/server.jar
 Restart=always
 WorkingDirectory=$BASE_DIR
 [Install]
