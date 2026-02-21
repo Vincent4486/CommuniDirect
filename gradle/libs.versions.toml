@@ -2,9 +2,11 @@
 java = "24"
 communidirect = "1.1.0"
 lanterna = "3.1.2"
+toml4j = "0.7.2"
 
 [libraries]
 lanterna = { group = "com.googlecode.lanterna", name = "lanterna", version.ref = "lanterna" }
+toml4j = { group = "com.moandjiezana.toml", name = "toml4j", version.ref = "toml4j" }
 
 [plugins]
 foojay-resolver = { id = "org.gradle.toolchains.foojay-resolver-convention", version = "0.8.0" }

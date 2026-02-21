@@ -1,10 +1,11 @@
 package net.vincent.communidirect.server;
 
-public class Defaults {
-    public static int DEFAULT_PORT = 9833;
-    public static String DEFAULT_IP = "127.0.0.1";
-
-    public static String DEFAULT_LOG_DIR = "/var/log/communidirect/";
-    public static String DEFAULT_ACCESSLOG_NAME = "access.log";
-    public static String DEFAULT_ERRLOG_NAME = "err.log";
+/**
+ * @deprecated Constants have moved to
+ *             {@link net.vincent.communidirect.common.Defaults}.
+ *             This stub exists only for backwards compatibility.
+ */
+@Deprecated
+public class Defaults extends net.vincent.communidirect.common.Defaults {
+    // All constants are inherited from the common module.
 }

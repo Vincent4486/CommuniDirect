@@ -1,19 +1,26 @@
 package net.vincent.communidirect.server;
 
+import net.vincent.communidirect.common.config.SettingsManager;
+
 public class ServerLauncher {
     public ServerSocket serverSocket;
     public ClientHandler clientHandler;
     public AccessLog accessLog;
+    public SettingsManager settings;
 
-    public ServerLauncher(){
-        serverSocket = new ServerSocket(this);
+    public ServerLauncher() {
+        settings = new SettingsManager();
+        settings.load();
+
+        serverSocket  = new ServerSocket(this);
         clientHandler = new ClientHandler(this);
-        accessLog = new AccessLog(this);
+        accessLog     = new AccessLog(this);
     }
 
-    public void init(){
-        accessLog.init(Defaults.DEFAULT_LOG_DIR + Defaults.DEFAULT_ACCESSLOG_NAME);
-        serverSocket.init(Defaults.DEFAULT_IP, Defaults.DEFAULT_PORT);
+    public void init() {
+        String logFile = settings.getLogDir() + "/" + settings.getAccessLogName();
+        accessLog.init(logFile);
+        serverSocket.init(settings.getIp(), settings.getPort());
         clientHandler.init(serverSocket.serverSocket);
     }
 

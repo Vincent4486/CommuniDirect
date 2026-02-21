@@ -1,5 +1,7 @@
 package net.vincent.communidirect.server;
 
+import net.vincent.communidirect.common.Defaults;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;

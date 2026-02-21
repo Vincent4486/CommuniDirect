@@ -1,3 +1,4 @@
 dependencies {
     // Shared libraries (like JSON parsers) go here
+    implementation libs.toml4j
 }
