@@ -4,7 +4,7 @@
 BASE_DIR="$HOME/.communidirect"
 BIN_DIR="$BASE_DIR/bin"
 LOG_DIR="$BASE_DIR/logs"
-VERSION="1.1.0"
+VERSION="1.3.0"
 
 echo "🚀 Installing CommuniDirect $VERSION..."
 

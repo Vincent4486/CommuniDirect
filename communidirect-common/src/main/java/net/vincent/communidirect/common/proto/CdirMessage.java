@@ -77,6 +77,12 @@ public final class CdirMessage {
      */
     public final String senderPubKeyHash;
 
+    /**
+     * Private constructor – instances are created only by {@link #decode}.
+     *
+     * @param senderPubKeyRaw 32-byte raw Ed25519 public key of the sender
+     * @param payload         decrypted plaintext payload bytes
+     */
     private CdirMessage(byte[] senderPubKeyRaw, byte[] payload) {
         this.senderPubKeyRaw  = senderPubKeyRaw;
         this.payload          = payload;
@@ -213,12 +219,27 @@ public final class CdirMessage {
     // Utility
     // -------------------------------------------------------------------------
 
+    /**
+     * Reconstructs a JCA {@link PublicKey} from a 32-byte raw Ed25519 public key
+     * by prepending the fixed SPKI DER header via {@link KeyGenerator#toSpki}.
+     *
+     * @param raw32 32-byte raw Ed25519 public key
+     * @return the corresponding {@link PublicKey}
+     * @throws Exception on any JCA error
+     */
     private static PublicKey reconstructPublicKey(byte[] raw32) throws Exception {
         java.security.KeyFactory kf = java.security.KeyFactory.getInstance("Ed25519");
         return kf.generatePublic(
             new java.security.spec.X509EncodedKeySpec(KeyGenerator.toSpki(raw32)));
     }
 
+    /**
+     * Computes the SHA-256 digest of {@code input}.
+     *
+     * @param input bytes to hash
+     * @return 32-byte SHA-256 digest
+     * @throws RuntimeException if SHA-256 is not available in the JCA provider
+     */
     private static byte[] sha256(byte[] input) {
         try {
             return MessageDigest.getInstance("SHA-256").digest(input);
@@ -227,6 +248,12 @@ public final class CdirMessage {
         }
     }
 
+    /**
+     * Returns the lowercase hex-encoded SHA-256 digest of {@code input}.
+     *
+     * @param input bytes to hash
+     * @return 64-character lowercase hex string
+     */
     private static String sha256Hex(byte[] input) {
         byte[] hash = sha256(input);
         StringBuilder sb = new StringBuilder(hash.length * 2);

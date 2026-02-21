@@ -8,6 +8,29 @@ subprojects {
         mavenCentral()
     }
 
+    // Aggregated Javadoc task that collects sources and classpaths from all
+    // subprojects and generates a single combined Javadoc site under
+    // `$buildDir/docs/javadoc`.
+    tasks.register('aggregatedJavadoc', Javadoc) {
+        // Set the destination to your desired directory
+        destinationDir = file("$buildDir/docs/javadoc")
+    
+        // Collect sources from all subprojects
+        source subprojects.collect { it.sourceSets.main.allJava }
+    
+        // Collect classpaths so Javadoc can resolve dependencies (like Lanterna/Toml4j)
+        classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+
+        // Optional: Javadoc options
+        options {
+            encoding = 'UTF-8'
+            charSet = 'UTF-8'
+            author = true
+            version = true
+            // Link to a stable JDK API reference. Adjust if you target a different JDK.
+            links("https://docs.oracle.com/en/java/javase/17/docs/api/")
+        }
+    }
     java {
         toolchain {
             // Pulls "24" from the TOML file

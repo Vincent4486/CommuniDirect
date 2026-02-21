@@ -71,6 +71,12 @@ public class KeyStoreManager {
     // Internal loaders
     // -------------------------------------------------------------------------
 
+    /**
+     * Reads and decodes the PKCS8-DER private key at {@code path}.
+     *
+     * @param path absolute path to the {@code identity.key} file
+     * @throws Exception on any IO or JCA error
+     */
     private void loadPrivateKey(String path) throws Exception {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         KeyFactory kf  = KeyFactory.getInstance("Ed25519");
@@ -93,6 +99,17 @@ public class KeyStoreManager {
         }
     }
 
+    /**
+     * Scans the given directory for {@code *.pub} files and loads each one as a
+     * peer Ed25519 public key.  Both 32-byte raw and 44-byte SPKI-encoded files
+     * are accepted.  The map key is derived from the filename without its
+     * {@code .pub} extension.
+     *
+     * <p>Malformed key files are skipped with a warning; they do not abort the load.
+     *
+     * @param dir path to the directory containing {@code *.pub} peer key files
+     * @throws Exception on catastrophic IO errors (individual bad files are tolerated)
+     */
     private void loadPeerKeys(String dir) throws Exception {
         Path dirPath = Paths.get(dir);
         if (!Files.isDirectory(dirPath)) {

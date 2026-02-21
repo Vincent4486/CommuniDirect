@@ -131,6 +131,12 @@ public final class KeyGenerator {
     // Internals
     // -------------------------------------------------------------------------
 
+    /**
+     * Writes (or overwrites) {@code ~/.communidirect/keys.toml} with the default
+     * path manifest read by {@link KeyStoreManager#load()}.
+     *
+     * @throws IOException if the file cannot be written
+     */
     private static void writeKeysToml() throws IOException {
         Map<String, Object> local = new LinkedHashMap<>();
         local.put("private_key_path", PRIV_FILE);
@@ -146,6 +152,13 @@ public final class KeyGenerator {
         System.out.println("[KeyGenerator] keys.toml written to: " + KEYS_TOML);
     }
 
+    /**
+     * Restricts file permissions on {@code path} to {@code 600} (owner read/write
+     * only) using the POSIX API.  On non-POSIX systems (e.g. Windows) the
+     * operation is silently skipped.
+     *
+     * @param path the file whose permissions should be restricted
+     */
     private static void setPosixPermissions600(Path path) {
         try {
             Set<PosixFilePermission> perms = EnumSet.of(

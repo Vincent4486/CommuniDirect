@@ -28,6 +28,11 @@ public class SettingsManager {
     private String accessLogName;
     private String errLogName;
 
+    /**
+     * Initialises all fields with their compiled-in defaults.
+     * Call {@link #load()} to overlay values from
+     * {@code ~/.communidirect/config.toml}.
+     */
     public SettingsManager() {
         this.port          = Defaults.DEFAULT_PORT;
         this.ip            = Defaults.DEFAULT_IP;
@@ -57,6 +62,10 @@ public class SettingsManager {
     // Internal helpers
     // -------------------------------------------------------------------------
 
+    /**
+     * Creates {@code ~/.communidirect/} and any missing ancestor directories.
+     * Silently succeeds if the directory already exists.
+     */
     private void ensureRootDirectory() {
         Path rootPath = Paths.get(ROOT_DIR);
         if (!Files.exists(rootPath)) {
@@ -69,6 +78,10 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * Creates the configured log directory (with tilde expansion) if it does not
+     * yet exist.  Called unconditionally after each {@link #load()} cycle.
+     */
     private void ensureLogDirectory() {
         Path logPath = Paths.get(resolveHome(logDir));
         if (!Files.exists(logPath)) {
@@ -81,6 +94,12 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * Serialises the compiled-in defaults to {@code configFile} as TOML.
+     * Called the first time the application runs and no config file exists.
+     *
+     * @param configFile the destination file; parent directory must already exist
+     */
     private void writeDefaults(File configFile) {
         Map<String, Object> config = new LinkedHashMap<>();
         config.put("port",            Defaults.DEFAULT_PORT);
@@ -97,6 +116,12 @@ public class SettingsManager {
         }
     }
 
+    /**
+     * Parses {@code configFile} and updates all settings fields.  Any missing
+     * key falls back to its compiled-in default rather than throwing.
+     *
+     * @param configFile an existing, readable TOML config file
+     */
     private void readConfig(File configFile) {
         try {
             Toml toml = new Toml().read(configFile);

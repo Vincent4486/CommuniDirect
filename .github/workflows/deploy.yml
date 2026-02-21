@@ -22,11 +22,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # Build the Fat JAR and generate Javadocs
-    - name: Build with Gradle
-      run: ./gradlew clean build javadoc
+    # Build the project and generate the single aggregated documentation
+    - name: Build and Aggregate Docs
+      run: ./gradlew clean build aggregatedJavadoc
 
-    - name: Refresh Application on Server
+    - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.REMOTE_HOST }}
@@ -35,16 +35,15 @@ jobs:
         script: |
           mkdir -p ~/deploy
           cd ~/deploy
-          # Clean up old clone if it exists, then clone fresh
           rm -rf CommuniDirect
           git clone https://github.com/Vincent4486/CommuniDirect
           cd CommuniDirect
           
-          # Ensure gradlew is executable and run javadoc
           chmod +x gradlew
-          ./gradlew javadoc
+          # Use the aggregated task on the server as well
+          ./gradlew aggregatedJavadoc
           
-          # Sync to the web directory
+          # Sync the aggregated results to the web directory
           sudo mkdir -p /var/webdocs/CommuniDirect
           sudo cp -r build/docs/javadoc/* /var/webdocs/CommuniDirect/
           

@@ -4,8 +4,25 @@ import net.vincent.communidirect.client.tui.TuiClient;
 import net.vincent.communidirect.common.config.SettingsManager;
 import net.vincent.communidirect.common.crypto.KeyStoreManager;
 
+/**
+ * Bootstrap entry point for the CommuniDirect interactive client.
+ *
+ * <p>Responsibility chain:
+ * <ol>
+ *   <li>Loads (or creates) settings via {@link net.vincent.communidirect.common.config.SettingsManager}.</li>
+ *   <li>Loads (or generates) the local Ed25519 identity via
+ *       {@link net.vincent.communidirect.common.crypto.KeyStoreManager}.</li>
+ *   <li>Delegates all subsequent UI and network interactions to
+ *       {@link net.vincent.communidirect.client.tui.TuiClient}.</li>
+ * </ol>
+ */
 public class ClientLauncher {
 
+    /**
+     * Application entry point.
+     *
+     * @param args command-line arguments (currently unused)
+     */
     public static void main(String[] args) {
         // Bootstrap shared services.
         SettingsManager settings = new SettingsManager();

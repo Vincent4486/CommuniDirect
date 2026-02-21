@@ -13,8 +13,17 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Handles incoming CDIR connections: accepts each socket, delegates to
+ * {@link net.vincent.communidirect.common.proto.CdirMessage#decode} for protocol
+ * parsing and signature verification, then persists the plaintext payload to
+ * {@code ~/.communidirect/msg/YYYYMMDD_HHMMSS_IP.msg}.
+ */
 public class ClientHandler {
+    /** The owning launcher, used to reach the shared {@link AccessLog} and {@link KeyStoreManager}. */
     ServerLauncher        serverLauncher;
+
+    /** The bound server socket passed in from {@link ServerLauncher#init()}. */
     java.net.ServerSocket serverSocket;
 
     private static final String MSG_DIR =
@@ -23,6 +32,11 @@ public class ClientHandler {
     private static final DateTimeFormatter TS_FMT =
         DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
 
+    /**
+     * Constructs a {@code ClientHandler} and ensures the message storage directory exists.
+     *
+     * @param serverLauncher the owning server launcher
+     */
     public ClientHandler(ServerLauncher serverLauncher) {
         this.serverLauncher = serverLauncher;
         ensureMsgDirectory();
@@ -32,6 +46,12 @@ public class ClientHandler {
     // Public API
     // -------------------------------------------------------------------------
 
+    /**
+     * Stores the server socket reference, then enters the blocking accept loop.
+     * This method does not return under normal operation.
+     *
+     * @param serverSocket the bound server socket to accept connections from
+     */
     public void init(java.net.ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
         listenLoop();
@@ -41,6 +61,12 @@ public class ClientHandler {
     // Accept loop
     // -------------------------------------------------------------------------
 
+    /**
+     * Runs an infinite accept loop, logging and dispatching each inbound connection
+     * to {@link #handleClient(Socket)}.
+     *
+     * @throws RuntimeException wrapping any {@link IOException} from {@code accept()}
+     */
     private void listenLoop() {
         while (true) {
             try {
@@ -57,6 +83,13 @@ public class ClientHandler {
     // Per-connection handling
     // -------------------------------------------------------------------------
 
+    /**
+     * Processes a single accepted connection: decodes the CDIR frame from the socket
+     * input stream and stores the verified plaintext message on disk.
+     * Errors are printed to stderr and do not terminate the accept loop.
+     *
+     * @param clientSocket the accepted socket (closed implicitly via try-with-resources)
+     */
     private void handleClient(Socket clientSocket) {
         String remoteIp = sanitiseIp(clientSocket.getInetAddress());
         try (InputStream in = clientSocket.getInputStream()) {
@@ -111,6 +144,9 @@ public class ClientHandler {
     // Internals
     // -------------------------------------------------------------------------
 
+    /**
+     * Creates {@value #MSG_DIR} (and all ancestor directories) if they do not yet exist.
+     */
     private void ensureMsgDirectory() {
         try {
             Files.createDirectories(Paths.get(MSG_DIR));

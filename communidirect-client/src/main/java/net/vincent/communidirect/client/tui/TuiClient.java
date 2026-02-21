@@ -60,7 +60,7 @@ public class TuiClient {
     // Constants
     // -------------------------------------------------------------------------
 
-    private static final String VERSION    = "v1.1.0";
+    private static final String VERSION    = "v1.3.0";
     private static final String ROOT_DIR   = System.getProperty("user.home") + "/.communidirect";
     private static final String STAGED_DIR = ROOT_DIR + "/staged";
     private static final String SENT_DIR   = ROOT_DIR + "/sent";
@@ -105,6 +105,13 @@ public class TuiClient {
     // Constructor
     // -------------------------------------------------------------------------
 
+    /**
+     * Constructs a {@code TuiClient} and derives the compact local identity string
+     * from the public key held in {@code keyStore}.
+     *
+     * @param settings the loaded application settings (IP, port)
+     * @param keyStore  the loaded key store providing the local private key and peer keys
+     */
     public TuiClient(SettingsManager settings, KeyStoreManager keyStore) {
         this.settings = settings;
         this.keyStore = keyStore;
@@ -115,6 +122,21 @@ public class TuiClient {
     // Entry point
     // -------------------------------------------------------------------------
 
+    /**
+     * Starts the interactive TUI, blocking until the user exits with {@code Ctrl+X}
+     * or the application is interrupted.
+     *
+     * <p>This method:
+     * <ol>
+     *   <li>Creates required data directories.</li>
+     *   <li>Performs an initial directory scan.</li>
+     *   <li>Initialises the Lanterna {@link Screen}.</li>
+     *   <li>Schedules a 60-second auto-refresh of received messages.</li>
+     *   <li>Enters the poll-based event loop.</li>
+     * </ol>
+     *
+     * @throws IOException if Lanterna cannot initialise the terminal
+     */
     public void run() throws IOException {
         ensureDirectories();
         scanAllDirs();
@@ -166,7 +188,26 @@ public class TuiClient {
     // Input handling
     // -------------------------------------------------------------------------
 
-    /** @return {@code true} if the application should exit. */
+    /**
+     * Dispatches a key event to the appropriate action.
+     *
+     * <p>If an informational overlay is currently displayed, any key dismisses
+     * it.  Otherwise the following bindings apply:
+     * <ul>
+     *   <li>{@code Ctrl+X} – exit</li>
+     *   <li>{@code Ctrl+N} – open external editor to compose a new message</li>
+     *   <li>{@code Ctrl+T} – switch to STAGED view</li>
+     *   <li>{@code Ctrl+V} – switch to RECEIVED view</li>
+     *   <li>{@code Ctrl+R} – force-reload all directories</li>
+     *   <li>{@code Ctrl+W} – send selected staged message (STAGED view only)</li>
+     *   <li>{@code Esc}    – return to LOG view</li>
+     *   <li>{@code ↑/↓}     – navigate list selection</li>
+     *   <li>{@code Enter}  – open selected received message (RECEIVED view only)</li>
+     * </ul>
+     *
+     * @param key the key stroke received from Lanterna
+     * @return {@code true} if the application should exit
+     */
     private boolean handleInput(KeyStroke key) {
         // Dismiss overlay on any key.
         if (showOverlay) {
@@ -221,6 +262,11 @@ public class TuiClient {
     // Drawing
     // -------------------------------------------------------------------------
 
+    /**
+     * Clears and redraws the entire screen: header bar, content area, footer bar,
+     * and (if active) the informational overlay.
+     * Silently logs any {@link IOException} thrown by Lanterna rather than crashing.
+     */
     private void drawScreen() {
         try {
             screen.doResizeIfNecessary();
@@ -242,6 +288,13 @@ public class TuiClient {
         }
     }
 
+    /**
+     * Draws the top-of-screen header bar showing the application name, version,
+     * local identity, and current view name.
+     *
+     * @param tg   the Lanterna text-graphics context
+     * @param size current terminal dimensions
+     */
     private void drawHeader(TextGraphics tg, TerminalSize size) {
         tg.setForegroundColor(TextColor.ANSI.BLACK);
         tg.setBackgroundColor(TextColor.ANSI.WHITE);
@@ -250,6 +303,12 @@ public class TuiClient {
         tg.putString(0, 0, padRight(header, size.getColumns()));
     }
 
+    /**
+     * Dispatches to the correct content-area renderer based on the current view.
+     *
+     * @param tg   the Lanterna text-graphics context
+     * @param size current terminal dimensions
+     */
     private void drawContent(TextGraphics tg, TerminalSize size) {
         tg.setForegroundColor(TextColor.ANSI.DEFAULT);
         tg.setBackgroundColor(TextColor.ANSI.DEFAULT);
@@ -268,6 +327,15 @@ public class TuiClient {
         }
     }
 
+    /**
+     * Renders the rolling event log in the content area, showing the newest
+     * entries at the bottom.
+     *
+     * @param tg     the Lanterna text-graphics context
+     * @param size   current terminal dimensions
+     * @param top    first row index available for content
+     * @param height number of rows available
+     */
     private void drawLog(TextGraphics tg, TerminalSize size,
                          int top, int height) {
         // Show last `height` log entries, newest at the bottom.
@@ -278,6 +346,17 @@ public class TuiClient {
         }
     }
 
+    /**
+     * Renders a scrollable, navigable file list (STAGED or RECEIVED view),
+     * highlighting the currently selected entry.
+     *
+     * @param tg       the Lanterna text-graphics context
+     * @param size     current terminal dimensions
+     * @param top      first row index available for content
+     * @param height   number of rows available
+     * @param files    the list of file paths to display
+     * @param emptyMsg message shown when {@code files} is empty
+     */
     private void drawList(TextGraphics tg, TerminalSize size,
                           int top, int height,
                           List<Path> files, String emptyMsg) {
@@ -310,6 +389,13 @@ public class TuiClient {
         }
     }
 
+    /**
+     * Draws the two-row footer: a separator bar and the context-sensitive
+     * key-binding hint line.
+     *
+     * @param tg   the Lanterna text-graphics context
+     * @param size current terminal dimensions
+     */
     private void drawFooter(TextGraphics tg, TerminalSize size) {
         int rows = size.getRows();
 
@@ -328,6 +414,14 @@ public class TuiClient {
         tg.setBackgroundColor(TextColor.ANSI.DEFAULT);
     }
 
+    /**
+     * Renders a centred, bordered overlay dialog containing {@link #overlayTitle}
+     * and {@link #overlayLines}.  The dialog is dismissed on the next key press
+     * via {@link #handleInput}.
+     *
+     * @param tg   the Lanterna text-graphics context
+     * @param size current terminal dimensions
+     */
     private void drawOverlay(TextGraphics tg, TerminalSize size) {
         int cols = size.getColumns();
         int rows = size.getRows();
@@ -369,6 +463,13 @@ public class TuiClient {
     // Workflow: New Message (Ctrl+N)
     // -------------------------------------------------------------------------
 
+    /**
+     * Creates a pre-filled temp file, suspends Lanterna, launches the user's
+     * {@code $EDITOR} (defaulting to {@code vi}), then parses the result via
+     * {@link MessageParser#parseTempFile} and saves a valid message to
+     * {@link #STAGED_DIR}.  If the editor exits non-zero or the message is
+     * incomplete the draft is discarded with a log entry.
+     */
     private void openNewMessageEditor() {
         Path tmpFile = null;
         try {
@@ -430,6 +531,14 @@ public class TuiClient {
     // Workflow: Send Staged (Ctrl+O)
     // -------------------------------------------------------------------------
 
+    /**
+     * Reads the currently selected staged TOML file, encodes it as a CDIR frame,
+     * opens a TCP connection to the target, transmits the frame, then moves the
+     * file from {@link #STAGED_DIR} to {@link #SENT_DIR}.
+     *
+     * <p>Errors (unknown peer key, connection failure, etc.) are logged to the
+     * event log and do not interrupt the TUI.
+     */
     private void sendSelectedStaged() {
         if (stagedFiles.isEmpty()) {
             log("No staged messages.");
@@ -481,6 +590,10 @@ public class TuiClient {
     // Workflow: View Received (Enter in RECEIVED view)
     // -------------------------------------------------------------------------
 
+    /**
+     * Reads the currently selected received message file and displays its
+     * contents in the informational overlay.
+     */
     private void openReceived() {
         if (receivedFiles.isEmpty()) return;
         if (selectedIndex < 0 || selectedIndex >= receivedFiles.size()) return;
@@ -503,6 +616,11 @@ public class TuiClient {
     // Directory scanning
     // -------------------------------------------------------------------------
 
+    /**
+     * Refreshes {@link #stagedFiles} and {@link #receivedFiles} by re-scanning
+     * their respective directories.  Received files are sorted newest-first by
+     * last-modified time.
+     */
     private void scanAllDirs() {
         scanDir(Paths.get(STAGED_DIR),   "*.toml", stagedFiles);
         scanDir(Paths.get(MSG_DIR),      "*.msg",  receivedFiles);
@@ -519,6 +637,14 @@ public class TuiClient {
         });
     }
 
+    /**
+     * Clears {@code target} and populates it with all paths in {@code dir}
+     * matching {@code glob}, sorted alphabetically by filename.
+     *
+     * @param dir    directory to scan
+     * @param glob   glob pattern (e.g. {@code "*.toml"}) relative to {@code dir}
+     * @param target list to populate; cleared before filling
+     */
     private void scanDir(Path dir, String glob, List<Path> target) {
         target.clear();
         if (!Files.isDirectory(dir)) return;
@@ -530,6 +656,11 @@ public class TuiClient {
         target.sort(Comparator.comparing(Path::getFileName));
     }
 
+    /**
+     * Appends a log entry for each received message file whose filename matches
+     * {@link #MSG_FILENAME_PATTERN}, extracting the timestamp and peer IP for
+     * display.  Called during auto-refresh cycles to surface new arrivals.
+     */
     private void scanMsgDirForLog() {
         // Add log entries for any new messages found during an auto-refresh.
         for (Path p : receivedFiles) {
@@ -550,11 +681,22 @@ public class TuiClient {
     // Helpers
     // -------------------------------------------------------------------------
 
+    /**
+     * Switches the active view, resetting the list selection to the first item.
+     *
+     * @param view the view to activate
+     */
     private void switchView(View view) {
         currentView   = view;
         selectedIndex = 0;
     }
 
+    /**
+     * Returns the number of items in the currently active list view, or
+     * {@code 0} in LOG view.
+     *
+     * @return item count for the selection cursor
+     */
     private int listSize() {
         return switch (currentView) {
             case STAGED   -> stagedFiles.size();
@@ -563,6 +705,11 @@ public class TuiClient {
         };
     }
 
+    /**
+     * Returns a human-readable label for the current view, used in the header bar.
+     *
+     * @return {@code "Log"}, {@code "Staged"}, or {@code "Received"}
+     */
     private String viewLabel() {
         return switch (currentView) {
             case LOG      -> "Log";
@@ -571,6 +718,13 @@ public class TuiClient {
         };
     }
 
+    /**
+     * Appends a timestamped entry to the in-memory log buffer.
+     * Keeps the buffer bounded at 500 entries by removing the oldest entry when
+     * the limit is exceeded.
+     *
+     * @param message the text to append (without a timestamp prefix)
+     */
     private void log(String message) {
         String ts = DISPLAY_FMT.format(LocalDateTime.now());
         logEntries.add(ts + " - " + message);
@@ -578,6 +732,11 @@ public class TuiClient {
         if (logEntries.size() > 500) logEntries.remove(0);
     }
 
+    /**
+     * Creates the four data directories ({@code ~/.communidirect/},
+     * {@code staged/}, {@code sent/}, {@code msg/}) if they do not already exist.
+     * Errors are printed to stderr but do not abort startup.
+     */
     private void ensureDirectories() {
         for (String dir : new String[]{ROOT_DIR, STAGED_DIR, SENT_DIR, MSG_DIR}) {
             try {
@@ -588,11 +747,27 @@ public class TuiClient {
         }
     }
 
+    /**
+     * Returns {@code s} padded with trailing spaces to exactly {@code width}
+     * characters, or truncated if it is already longer.
+     *
+     * @param s     the source string
+     * @param width desired output width in terminal columns
+     * @return a string of exactly {@code width} characters
+     */
     private static String padRight(String s, int width) {
         if (s.length() >= width) return s.substring(0, width);
         return s + " ".repeat(width - s.length());
     }
 
+    /**
+     * Returns {@code s} centred within {@code width} columns by adding equal
+     * leading and trailing spaces.  Truncates if {@code s} exceeds {@code width}.
+     *
+     * @param s     the source string
+     * @param width desired output width in terminal columns
+     * @return a centred string of exactly {@code width} characters
+     */
     private static String centerPad(String s, int width) {
         if (s.length() >= width) return s.substring(0, width);
         int pad = width - s.length();
@@ -600,10 +775,32 @@ public class TuiClient {
         return " ".repeat(left) + s + " ".repeat(pad - left);
     }
 
+    /**
+     * Returns {@code s} unchanged if it fits within {@code width} columns;
+     * otherwise returns the first {@code width-1} characters followed by an
+     * ellipsis ({@code …}).
+     *
+     * @param s     the source string
+     * @param width maximum output width in terminal columns
+     * @return a string no longer than {@code width} characters
+     */
     private static String truncate(String s, int width) {
         return s.length() <= width ? s : s.substring(0, Math.max(0, width - 1)) + "…";
     }
 
+    /**
+     * Maps a file's path to a user-friendly display label.
+     *
+     * <ul>
+     *   <li>For {@code *.msg} files whose name matches {@link #MSG_FILENAME_PATTERN}
+     *       the label is {@code [YYYYMMDD HH:MM:SS] ip}.</li>
+     *   <li>For {@code *.toml} staged files the label is the bare filename
+     *       without extension.</li>
+     * </ul>
+     *
+     * @param p the path to format
+     * @return a human-readable label string
+     */
     private static String formatFileLabel(Path p) {
         String name = p.getFileName().toString();
         Matcher m = MSG_FILENAME_PATTERN.matcher(name);
