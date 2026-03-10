@@ -12,6 +12,7 @@ The project is built using Java 24 and Gradle. To contribute, ensure your enviro
 Before submitting a pull request, ensure the project builds correctly and all documentation is generated:
 
 ```bash
+./gradlew updateDaemonJvm --jvm-version YOUR_JDK_VERSION
 ./gradlew clean build aggregatedJavadoc
 ```
 

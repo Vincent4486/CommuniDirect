@@ -21,6 +21,7 @@ The project is built with Java 24 and organized into a clean multi-module Gradle
 
 ### 1. Build from Source
 ```bash
+./gradlew updateDaemonJvm --jvm-version YOUR_JDK_VERSION
 ./gradlew clean build aggregatedJavadoc
 ```
 
@@ -28,7 +29,7 @@ The project is built with Java 24 and organized into a clean multi-module Gradle
 Run the universal installer to set up directories, binary wrappers, and background services:
 ```bash
 chmod +x install.sh
-./install.sh
+./scripts/install.sh
 ```
 
 ### 3. Generate Your Identity
@@ -38,13 +39,14 @@ cd-client
 ```
 
 ## Client Keybindings
-| Key | Action |
-| :--- | :--- |
-| ^N | New Message: Opens your $EDITOR to draft a new message. |
-| ^S | Staged Messages: Browse and select drafts to be sent. |
-| ^O | Send: (In Staged View) Dispatches the selected message. |
-| ^V | View Received: Browse your archived conversation history. |
-| ^X | Exit: Gracefully close the Lanterna TUI. |
+| Key | Action                                                     |
+|:----|:-----------------------------------------------------------|
+| ^N  | New Message: Opens your $EDITOR to draft a new message.    |
+| ^T  | Staged Messages: Browse and select drafts to be sent.      |
+| ^W  | Send: (In Staged View) Dispatches the selected message.    |
+| ^V  | View Received: Browse your archived conversation history.  |
+| ^X  | Exit: Gracefully close the Lanterna TUI.                   |
+| ^R  | Reload: Forces the message receiver to update the messages |
 
 ## Configuration
 All configuration and data are stored in ~/.communidirect/:
