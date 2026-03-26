@@ -4,6 +4,7 @@ import net.vincent.communidirect.client.core.ClientCore;
 import net.vincent.communidirect.client.core.ClientWebhookListener;
 import net.vincent.communidirect.client.util.StagedMessage;
 import net.vincent.communidirect.common.config.SettingsManager;
+import net.vincent.communidirect.common.crypto.CryptoEngine;
 import net.vincent.communidirect.common.crypto.KeyStoreManager;
 
 import javax.swing.*;
@@ -14,6 +15,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Swing-based GUI client mode for CommuniDirect.
+ *
+ * Provides staged and received message views, compose/send/open workflows,
+ * activity logging, and local webhook-driven refresh updates.
+ */
 public class GuiClient {
 
     private final ClientCore core = new ClientCore();
@@ -23,6 +30,7 @@ public class GuiClient {
     private DefaultListModel<String> stagedModel;
     private DefaultListModel<String> receivedModel;
     private JTextArea logArea;
+    private JTextArea avatarArea;
     private JLabel statusLabel;
     private JFrame frame;
     private JList<String> stagedList;
@@ -31,6 +39,12 @@ public class GuiClient {
     private KeyStoreManager keyStore;
     private ClientWebhookListener webhookListener;
 
+    /**
+     * Launches the GUI client on the Swing event dispatch thread.
+     *
+     * @param settings loaded client settings
+     * @param keyStore loaded key store with own and peer keys
+     */
     public void run(SettingsManager settings, KeyStoreManager keyStore) {
         this.settings = settings;
         this.keyStore = keyStore;
@@ -70,6 +84,12 @@ public class GuiClient {
         });
     }
 
+    /**
+     * Builds the main split layout containing staged and received lists plus
+     * the bottom activity log and local avatar panel.
+     *
+     * @return assembled main panel component
+     */
     private JComponent buildMainPanel() {
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setResizeWeight(0.5);
@@ -105,11 +125,33 @@ public class GuiClient {
         logArea.setWrapStyleWord(true);
         JScrollPane logScroll = new JScrollPane(logArea);
         logScroll.setBorder(BorderFactory.createTitledBorder("Activity Log"));
-        mainPanel.add(logScroll, BorderLayout.SOUTH);
+
+        avatarArea = new JTextArea(buildAvatarText());
+        avatarArea.setEditable(false);
+        avatarArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        avatarArea.setRows(8);
+        avatarArea.setColumns(20);
+        avatarArea.setLineWrap(false);
+        avatarArea.setFocusable(false);
+
+        JScrollPane avatarScroll = new JScrollPane(avatarArea);
+        avatarScroll.setBorder(BorderFactory.createTitledBorder("Local Avatar"));
+        avatarScroll.setPreferredSize(new Dimension(250, 180));
+
+        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+        bottomPanel.add(logScroll, BorderLayout.CENTER);
+        bottomPanel.add(avatarScroll, BorderLayout.EAST);
+
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         return mainPanel;
     }
 
+    /**
+     * Builds button controls for staged-message actions.
+     *
+     * @return staged actions panel
+     */
     private JComponent buildStagedButtons() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton newBtn = new JButton("New Message");
@@ -134,6 +176,10 @@ public class GuiClient {
         return panel;
     }
 
+    /**
+     * Opens the compose message window, validates user input, and stages the
+     * resulting message using client core workflows.
+     */
     private void openComposeEditorFrame() {
         JFrame editor = new JFrame("Compose Message");
         editor.setSize(780, 560);
@@ -249,6 +295,11 @@ public class GuiClient {
         editor.setVisible(true);
     }
 
+    /**
+     * Builds button controls for received-message actions.
+     *
+     * @return received actions panel
+     */
     private JComponent buildReceivedButtons() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton openBtn = new JButton("Open Selected");
@@ -262,6 +313,11 @@ public class GuiClient {
         return panel;
     }
 
+    /**
+     * Builds the footer containing the status label.
+     *
+     * @return footer component
+     */
     private JComponent buildFooterPanel() {
         JPanel footer = new JPanel(new BorderLayout());
         statusLabel = new JLabel("Ready.");
@@ -269,6 +325,10 @@ public class GuiClient {
         return footer;
     }
 
+    /**
+     * Creates required directories, performs first list refresh, and logs GUI
+     * readiness.
+     */
     private void initializeAndRefresh() {
         try {
             core.ensureDirectories();
@@ -279,6 +339,10 @@ public class GuiClient {
         }
     }
 
+    /**
+     * Refreshes staged and received file lists while preserving current
+     * selections when possible.
+     */
     private void refreshLists() {
         try {
             int selectedStaged = stagedList.getSelectedIndex();
@@ -312,6 +376,9 @@ public class GuiClient {
         }
     }
 
+    /**
+     * Sends the currently selected staged message.
+     */
     private void sendSelectedStaged() {
         int index = stagedList.getSelectedIndex();
         if (index < 0 || index >= stagedFiles.size()) {
@@ -325,6 +392,9 @@ public class GuiClient {
         refreshLists();
     }
 
+    /**
+     * Opens the currently selected received message in a read-only dialog.
+     */
     private void openSelectedReceived() {
         int index = receivedList.getSelectedIndex();
         if (index < 0 || index >= receivedFiles.size()) {
@@ -352,6 +422,10 @@ public class GuiClient {
         }
     }
 
+    /**
+     * Starts the localhost webhook listener and wires callbacks to refresh the
+     * GUI when new-message notifications arrive.
+     */
     private void startWebhookListener() {
         webhookListener = new ClientWebhookListener(
             payload -> SwingUtilities.invokeLater(() -> {
@@ -367,11 +441,34 @@ public class GuiClient {
         }
     }
 
+    /**
+     * Appends a message to the activity log and updates footer status text.
+     *
+     * @param message log text
+     */
     private void log(String message) {
         logArea.append(message + "\n");
         logArea.setCaretPosition(logArea.getDocument().getLength());
         if (statusLabel != null) {
             statusLabel.setText(message);
+        }
+    }
+
+    /**
+     * Builds the text shown in the local avatar panel.
+     *
+     * @return ID line plus avatar art, or Unavailable when key data is missing
+     */
+    private String buildAvatarText() {
+        byte[] ownPub = keyStore.getOwnPublicKeyRaw();
+        if (ownPub == null || ownPub.length == 0) {
+            return "Unavailable";
+        }
+        try {
+            return "ID: " + ClientCore.deriveLocalId(ownPub) + "\n\n" +
+                CryptoEngine.getSymmetricAvatar(ownPub);
+        } catch (IllegalArgumentException e) {
+            return "Unavailable";
         }
     }
 }

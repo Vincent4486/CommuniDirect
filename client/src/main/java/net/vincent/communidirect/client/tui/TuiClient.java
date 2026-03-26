@@ -12,6 +12,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import net.vincent.communidirect.client.util.MessageParser;
 import net.vincent.communidirect.client.util.StagedMessage;
 import net.vincent.communidirect.common.config.SettingsManager;
+import net.vincent.communidirect.common.crypto.CryptoEngine;
 import net.vincent.communidirect.common.crypto.KeyGenerator;
 import net.vincent.communidirect.common.crypto.KeyStoreManager;
 import net.vincent.communidirect.common.proto.CdirMessage;
@@ -97,6 +98,7 @@ public class TuiClient {
     private final SettingsManager settings;
     private final KeyStoreManager keyStore;
     private final String          localId;
+    private final List<String>    avatarLines;
 
     private Screen screen;
     private ScheduledExecutorService scheduler;
@@ -116,6 +118,7 @@ public class TuiClient {
         this.settings = settings;
         this.keyStore = keyStore;
         this.localId  = deriveLocalId(keyStore.getOwnPublicKeyRaw());
+        this.avatarLines = buildAvatarLines(keyStore.getOwnPublicKeyRaw());
     }
 
     // -------------------------------------------------------------------------
@@ -318,11 +321,21 @@ public class TuiClient {
         int contentHeight = contentBottom - contentTop;
         if (contentHeight <= 0) return;
 
+        int contentLeft = 0;
+        int contentWidth = size.getColumns();
+
+        int avatarBoxWidth = 24;
+        if (size.getColumns() >= 70 && contentHeight >= 9) {
+            int avatarLeft = Math.max(0, size.getColumns() - avatarBoxWidth);
+            drawAvatarBox(tg, avatarLeft, contentTop, avatarBoxWidth, Math.min(contentHeight, 9));
+            contentWidth = Math.max(10, avatarLeft - 1);
+        }
+
         switch (currentView) {
-            case LOG:      drawLog(tg, size, contentTop, contentHeight);      break;
-            case STAGED:   drawList(tg, size, contentTop, contentHeight,
+            case LOG:      drawLog(tg, contentLeft, contentTop, contentWidth, contentHeight);      break;
+            case STAGED:   drawList(tg, contentLeft, contentTop, contentWidth, contentHeight,
                                    stagedFiles,   "[STAGED]");               break;
-            case RECEIVED: drawList(tg, size, contentTop, contentHeight,
+            case RECEIVED: drawList(tg, contentLeft, contentTop, contentWidth, contentHeight,
                                    receivedFiles, "[RECEIVED]");             break;
         }
     }
@@ -336,13 +349,13 @@ public class TuiClient {
      * @param top    first row index available for content
      * @param height number of rows available
      */
-    private void drawLog(TextGraphics tg, TerminalSize size,
-                         int top, int height) {
+    private void drawLog(TextGraphics tg, int left, int top, int width, int height) {
+        if (width <= 0) return;
         // Show last `height` log entries, newest at the bottom.
         int start = Math.max(0, logEntries.size() - height);
         for (int i = 0; i < height && (start + i) < logEntries.size(); i++) {
-            String line = truncate(logEntries.get(start + i), size.getColumns());
-            tg.putString(0, top + i, line);
+            String line = truncate(logEntries.get(start + i), width);
+            tg.putString(left, top + i, line);
         }
     }
 
@@ -357,12 +370,12 @@ public class TuiClient {
      * @param files    the list of file paths to display
      * @param emptyMsg message shown when {@code files} is empty
      */
-    private void drawList(TextGraphics tg, TerminalSize size,
-                          int top, int height,
+    private void drawList(TextGraphics tg, int left, int top, int width, int height,
                           List<Path> files, String emptyMsg) {
+        if (width <= 0) return;
         if (files.isEmpty()) {
             tg.setForegroundColor(TextColor.ANSI.YELLOW);
-            tg.putString(2, top + 1, emptyMsg + " – no files.");
+            tg.putString(left + 2, top + 1, truncate(emptyMsg + " – no files.", Math.max(0, width - 2)));
             tg.setForegroundColor(TextColor.ANSI.DEFAULT);
             return;
         }
@@ -380,13 +393,32 @@ public class TuiClient {
             if (idx == selectedIndex) {
                 tg.setForegroundColor(TextColor.ANSI.BLACK);
                 tg.setBackgroundColor(TextColor.ANSI.WHITE);
-                tg.putString(0, row, padRight(line, size.getColumns()));
+                tg.putString(left, row, padRight(line, width));
                 tg.setForegroundColor(TextColor.ANSI.DEFAULT);
                 tg.setBackgroundColor(TextColor.ANSI.DEFAULT);
             } else {
-                tg.putString(0, row, truncate(line, size.getColumns()));
+                tg.putString(left, row, truncate(line, width));
             }
         }
+    }
+
+    private void drawAvatarBox(TextGraphics tg, int left, int top, int width, int height) {
+        if (width < 8 || height < 5) return;
+
+        String horizontal = "─".repeat(width - 2);
+        tg.putString(left, top, "┌" + horizontal + "┐");
+
+        String title = centerPad("Avatar", width - 2);
+        tg.putString(left, top + 1, "│" + title + "│");
+        tg.putString(left, top + 2, "├" + horizontal + "┤");
+
+        int contentRows = height - 4;
+        for (int i = 0; i < contentRows; i++) {
+            String line = i < avatarLines.size() ? avatarLines.get(i) : "";
+            tg.putString(left, top + 3 + i, "│" + centerPad(line, width - 2) + "│");
+        }
+
+        tg.putString(left, top + height - 1, "└" + horizontal + "┘");
     }
 
     /**
@@ -823,6 +855,17 @@ public class TuiClient {
                 hash[0] & 0xff, hash[1] & 0xff, hash[2] & 0xff, hash[3] & 0xff);
         } catch (Exception e) {
             return "n/a";
+        }
+    }
+
+    private static List<String> buildAvatarLines(byte[] pubKeyRaw) {
+        if (pubKeyRaw == null || pubKeyRaw.length == 0) {
+            return List.of("Unavailable");
+        }
+        try {
+            return List.of(CryptoEngine.getSymmetricAvatar(pubKeyRaw).split("\\R"));
+        } catch (IllegalArgumentException e) {
+            return List.of("Unavailable");
         }
     }
 }

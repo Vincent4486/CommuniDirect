@@ -2,6 +2,7 @@ package net.vincent.communidirect.server;
 
 import net.vincent.communidirect.common.hook.LocalWebhookConfig;
 import net.vincent.communidirect.common.proto.CdirMessage;
+import net.vincent.communidirect.common.crypto.CryptoEngine;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -121,7 +122,9 @@ public class ClientHandler {
      *
      * File format:
      * <pre>
-     *   SENDER_PUBKEY_HASH: &lt;sha256-hex&gt;
+     *   SENDER_PUBKEY_HASH:
+     *   &lt;5x5 ASCII avatar&gt;
+     *   ------------------------------
      *
      *   &lt;plaintext payload&gt;
      * </pre>
@@ -131,9 +134,7 @@ public class ClientHandler {
         String filename  = timestamp + "_" + remoteIp + ".msg";
         Path   outPath   = Paths.get(MSG_DIR, filename);
 
-        String content =
-            "SENDER_PUBKEY_HASH: " + msg.senderPubKeyHash + "\n\n" +
-            new String(msg.payload, StandardCharsets.UTF_8);
+        String content = buildSavedMessageContent(msg);
 
         try {
             Files.writeString(outPath, content);
@@ -142,6 +143,48 @@ public class ClientHandler {
         } catch (IOException e) {
             System.err.println("[ClientHandler] Failed to save message: " + e.getMessage());
         }
+    }
+
+    private static String buildSavedMessageContent(CdirMessage msg) {
+        String avatar = buildAvatarFromHash(msg.senderPubKeyHash);
+        String messageBody = new String(msg.payload, StandardCharsets.UTF_8);
+        return "SENDER_PUBKEY_HASH:\n" +
+            avatar + "\n" +
+            "------------------------------\n" +
+            messageBody;
+    }
+
+    private static String buildAvatarFromHash(String hashHex) {
+        try {
+            byte[] hashBytes = hexToBytes(hashHex);
+            if (hashBytes.length == 0) {
+                return "Unavailable";
+            }
+            return CryptoEngine.getSymmetricAvatar(hashBytes);
+        } catch (Exception ignored) {
+            return "Unavailable";
+        }
+    }
+
+    private static byte[] hexToBytes(String hex) {
+        if (hex == null) {
+            return new byte[0];
+        }
+        String clean = hex.trim();
+        if ((clean.length() % 2) != 0) {
+            throw new IllegalArgumentException("Hex string must have even length.");
+        }
+
+        byte[] out = new byte[clean.length() / 2];
+        for (int i = 0; i < clean.length(); i += 2) {
+            int hi = Character.digit(clean.charAt(i), 16);
+            int lo = Character.digit(clean.charAt(i + 1), 16);
+            if (hi < 0 || lo < 0) {
+                throw new IllegalArgumentException("Invalid hex character.");
+            }
+            out[i / 2] = (byte) ((hi << 4) | lo);
+        }
+        return out;
     }
 
     // -------------------------------------------------------------------------

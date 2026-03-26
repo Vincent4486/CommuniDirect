@@ -10,11 +10,25 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 
+/**
+ * Entry point for the CommuniDirect client application.
+ *
+ * Initializes settings and key material, optionally attempts to auto-start the
+ * server, and then launches one of the supported client modes:
+ * terminal (default), GUI, or TUI.
+ */
 public class ClientLauncher {
 
+    /** Utility class. */
     private ClientLauncher() {
     }
 
+    /**
+     * Starts the client by loading settings and keys, selecting the requested
+     * mode from command-line flags, and launching the mode runtime.
+     *
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         SettingsManager settings = new SettingsManager();
         settings.load();
@@ -62,6 +76,12 @@ public class ClientLauncher {
         }
     }
 
+    /**
+     * Verifies whether the server is reachable and, when unavailable, attempts
+     * to start it using the bundled launcher scripts.
+     *
+     * @param settings active settings containing server host and port
+     */
     private static void checkAndStartServer(SettingsManager settings) {
         try {
             if (isServerReachable(settings)) {
@@ -99,6 +119,12 @@ public class ClientLauncher {
         }
     }
 
+    /**
+     * Performs a TCP reachability probe to the configured server endpoint.
+     *
+     * @param settings active settings containing server host and port
+     * @return true when a connection can be established, otherwise false
+     */
     private static boolean isServerReachable(SettingsManager settings) {
         try (Socket socket = new Socket(settings.getIp(), settings.getPort())) {
             return true;
