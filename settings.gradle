@@ -19,3 +19,7 @@ rootProject.name = 'communidirect'
 include 'communidirect-common'
 include 'communidirect-server'
 include 'communidirect-client'
+
+project(':communidirect-common').projectDir = file('common')
+project(':communidirect-server').projectDir = file('server')
+project(':communidirect-client').projectDir = file('client')

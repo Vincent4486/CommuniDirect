@@ -12,8 +12,8 @@ echo "🚀 Installing CommuniDirect $VERSION..."
 mkdir -p "$BIN_DIR" "$LOG_DIR" "$BASE_DIR/msg" "$BASE_DIR/keys" "$BASE_DIR/staged" "$BASE_DIR/sent"
 
 # 2. Copy JARs
-SERVER_JAR="communidirect-server/build/libs/communidirect-server-$VERSION.jar"
-CLIENT_JAR="communidirect-client/build/libs/communidirect-client-$VERSION.jar"
+SERVER_JAR="server/build/libs/communidirect-server-$VERSION.jar"
+CLIENT_JAR="client/build/libs/communidirect-client-$VERSION.jar"
 
 if [[ -f "$SERVER_JAR" && -f "$CLIENT_JAR" ]]; then
     cp "$SERVER_JAR" "$BIN_DIR/server.jar"
